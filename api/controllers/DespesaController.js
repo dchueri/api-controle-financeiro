@@ -5,8 +5,8 @@ const validacoes = new Validacoes("Despesas");
 class DespesaController {
   static async pegaTodasAsDespesas(req, res, next) {
     try {
-      const todasAsDespesas = await database.Despesas.findAll();
-      return res.status(200).json(todasAsDespesas);
+      const todasAsDespesas = await database.Despesas.findAll({ raw: true });
+      return res.status(200).json(validacoes.filtrar(todasAsDespesas));
     } catch (error) {
       return next(error);
     }
@@ -38,7 +38,6 @@ class DespesaController {
     const novasInfos = req.body;
     try {
       validacoes.verificaSeHouveramDados(novasInfos);
-      validacoes.alteraLancamento();
       await database.Despesas.update(novasInfos, { where: { id: Number(id) } });
       const despesaAtualizada = await validacoes.pegarPorId(id);
       return res.status(200).json(despesaAtualizada);

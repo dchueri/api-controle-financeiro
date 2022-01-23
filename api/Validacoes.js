@@ -13,6 +13,7 @@ const Op = Sequelize.Op;
 class Validacoes {
   constructor(modelo) {
     this.modelo = modelo;
+    this.camposPublicos = ["id", "descricao", "valor", "data"];
   }
 
   defineNomeDoModelo() {
@@ -92,17 +93,30 @@ class Validacoes {
     return this.adicionaLancamento(dados);
   }
 
-  async atualizaLancamento(id, dados) {
-    return database[this.nomeDoModelo].update(
-      dados,
-      { where: { id: id } },
-      transaction
-    );
-  }
-
   async alteraLancamento(dados) {
     await this.pegarPorId({ id: dados.id });
-    return this.update(dados);
+  }
+
+  filtrarObjeto(dados) {
+    const novoObjeto = {};
+
+    this.camposPublicos.forEach((campo) => {
+      if (dados.hasOwnProperty(campo)) {
+        novoObjeto[campo] = dados[campo];
+      }
+    });
+    return novoObjeto;
+  }
+
+  filtrar(dados) {
+    if (Array.isArray(dados)) {
+      dados = dados.map((item) => {
+        return this.filtrarObjeto(item);
+      });
+    } else {
+      dados = this.filtrarObjeto(dados);
+    }
+    return dados;
   }
 }
 

@@ -6,7 +6,7 @@ class ReceitaController {
   static async pegaTodasAsReceitas(req, res, next) {
     try {
       const todasAsReceitas = await database.Receitas.findAll();
-      return res.status(200).json(todasAsReceitas);
+      return res.status(200).json(validacoes.filtrar(todasAsDespesas));
     } catch (error) {
       return next(error);
     }
@@ -38,7 +38,6 @@ class ReceitaController {
     const novasInfos = req.body;
     try {
       validacoes.verificaSeHouveramDados(novasInfos);
-      validacoes.alteraLancamento();
       await database.Receitas.update(novasInfos, { where: { id: Number(id) } });
       const receitaAtualizada = await validacoes.pegarPorId(id);
       return res.status(200).json(receitaAtualizada);
