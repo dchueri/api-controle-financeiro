@@ -24,7 +24,6 @@ class DespesaController {
 
   static async criaDespesa(req, res, next) {
     const dados = req.body;
-    console.log(dados.descricao + " e " + dados.valor);
     try {
       validacoes.verificaSeHaCampoVazio(dados);
       const novaDespesa = await validacoes.criarLancamento(dados);
