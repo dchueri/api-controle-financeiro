@@ -1,12 +1,14 @@
-const database = require("../models");
+const { ReceitasServices } = require("../services");
+const receitasServices = new ReceitasServices();
+
 const Validacoes = require("../Validacoes");
 const validacoes = new Validacoes("Receitas");
 
 class ReceitaController {
   static async pegaTodasAsReceitas(req, res, next) {
     try {
-      const todasAsReceitas = await database.Receitas.findAll();
-      return res.status(200).json(validacoes.filtrar(todasAsDespesas));
+      const todasAsReceitas = await receitasServices.pegaTodosOsRegistros();
+      return res.status(200).json(validacoes.filtrar(todasAsReceitas));
     } catch (error) {
       return next(error);
     }
@@ -15,7 +17,7 @@ class ReceitaController {
   static async pegaUmaReceita(req, res, next) {
     const { id } = req.params;
     try {
-      const umaReceita = await validacoes.pegarPorId(id);
+      const umaReceita = await receitasServices.pegaUmRegistro(id);
       return res.status(200).json(umaReceita);
     } catch (error) {
       return next(error);
@@ -26,7 +28,7 @@ class ReceitaController {
     const dados = req.body;
     try {
       validacoes.verificaSeHaCampoVazio(dados);
-      const novaReceita = await validacoes.criarLancamento(dados);
+      const novaReceita = await receitasServices.criaRegistro(dados);
       return res.status(201).json(novaReceita);
     } catch (error) {
       return next(error);
@@ -38,8 +40,10 @@ class ReceitaController {
     const novasInfos = req.body;
     try {
       validacoes.verificaSeHouveramDados(novasInfos);
-      await database.Receitas.update(novasInfos, { where: { id: Number(id) } });
-      const receitaAtualizada = await validacoes.pegarPorId(id);
+      await receitasServices.atualizaRegistro(novasInfos, {
+        where: { id: Number(id) },
+      });
+      const receitaAtualizada = await receitasServices.pegaUmRegistro(id);
       return res.status(200).json(receitaAtualizada);
     } catch (error) {
       return next(error);
@@ -49,8 +53,8 @@ class ReceitaController {
   static async apagaReceita(req, res, next) {
     const { id } = req.params;
     try {
-      await validacoes.pegarPorId(id);
-      await database.Receitas.destroy({ where: { id: Number(id) } });
+      await receitasServices.pegaUmRegistro(id);
+      await receitasServices.deletaRegistro(id);
       return res.status(200).json({ mensagem: `id ${id} deletado` });
     } catch (error) {
       return next(error);

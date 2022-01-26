@@ -1,27 +1,18 @@
-const moment = require("moment");
-const Sequelize = require("sequelize");
 const {
-  LancamentoExistente,
   NaoEncontrado,
   DadosNaoFornecidos,
   CampoInvalido,
+  LancamentoExistente,
 } = require("./errors/listaDeErros");
 const database = require("./models");
-
-const Op = Sequelize.Op;
+const moment = require('moment')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 
 class Validacoes {
   constructor(modelo) {
     this.modelo = modelo;
     this.camposPublicos = ["id", "descricao", "valor", "data"];
-  }
-
-  defineNomeDoModelo() {
-    if (this.modelo === "Despesas") {
-      return "DESPESA";
-    } else if (this.modelo === "Receitas") {
-      return "RECEITA";
-    }
   }
 
   verificaSeHouveramDados(dados) {
@@ -42,8 +33,12 @@ class Validacoes {
     }
   }
 
-  async verificaSeExisteLancamentoIgual(where = {}, checkIfExists) {
-    const result = await database[this.modelo].findOne({
+  async verificaSeExisteLancamentoIgual(
+    nomeDoModelo,
+    where = {},
+    checkIfExists
+  ) {
+    const result = await database[nomeDoModelo].findOne({
       where: { ...where },
       raw: true,
     });
@@ -55,32 +50,12 @@ class Validacoes {
     return result;
   }
 
-  async pegarPorId(id) {
-    const lancamentoEncontrado = await database[this.modelo].findOne({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!lancamentoEncontrado) {
-      throw new NaoEncontrado(this.defineNomeDoModelo());
-    }
-
-    return lancamentoEncontrado;
-  }
-
-  async adicionaLancamento(data) {
-    return database[this.modelo].create(data);
-  }
-
-  async criarLancamento(dados) {
-    const nomeDoModelo = this.defineNomeDoModelo();
+  async verificaDadosRepitidos(modelo, dados) {
     const startOfMonth = moment(dados.data)
       .startOf("month")
       .format("YYYY-MM-DD");
     const endOfMonth = moment(dados.data).endOf("month").format("YYYY-MM-DD");
-    console.log(dados);
-    const lancamento = await this.verificaSeExisteLancamentoIgual({
+    const lancamento = await this.verificaSeExisteLancamentoIgual(modelo, {
       descricao: dados.descricao,
       data: {
         [Op.gte]: startOfMonth,
@@ -88,13 +63,8 @@ class Validacoes {
       },
     });
     if (lancamento) {
-      throw new LancamentoExistente(nomeDoModelo);
+      throw new LancamentoExistente(modelo);
     }
-    return this.adicionaLancamento(dados);
-  }
-
-  async alteraLancamento(dados) {
-    await this.pegarPorId({ id: dados.id });
   }
 
   filtrarObjeto(dados) {

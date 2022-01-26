@@ -1,6 +1,4 @@
 const bodyParser = require("body-parser");
-const res = require("express/lib/response");
-
 const despesas = require("./despesasRoute");
 const receitas = require("./receitasRoute");
 
