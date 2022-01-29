@@ -28,6 +28,7 @@ class DespesaController {
     const dados = req.body;
     try {
       validacoes.verificaSeHaCampoVazio(dados);
+      dados.categoria = await despesasServices.defineCategoria(dados);
       const novaDespesa = await despesasServices.criaRegistro(dados);
       return res.status(201).json(novaDespesa);
     } catch (error) {

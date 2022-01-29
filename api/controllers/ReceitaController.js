@@ -28,6 +28,7 @@ class ReceitaController {
     const dados = req.body;
     try {
       validacoes.verificaSeHaCampoVazio(dados);
+      dados.categoria = await receitasServices.defineCategoria(dados);
       const novaReceita = await receitasServices.criaRegistro(dados);
       return res.status(201).json(novaReceita);
     } catch (error) {

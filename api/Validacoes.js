@@ -12,7 +12,7 @@ const Op = Sequelize.Op
 class Validacoes {
   constructor(modelo) {
     this.modelo = modelo;
-    this.camposPublicos = ["id", "descricao", "valor", "data"];
+    this.camposPublicos = ["id", "categoria","descricao", "valor", "data"];
   }
 
   verificaSeHouveramDados(dados) {
@@ -26,6 +26,7 @@ class Validacoes {
       throw new CampoInvalido("descrição");
     }
     if (typeof dado.valor !== "number" || dado.valor <= 0) {
+      console.log(dado.valor)
       throw new CampoInvalido("valor");
     }
     if (typeof dado.data !== "string" || dado.data.length !== 10) {
