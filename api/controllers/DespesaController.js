@@ -6,9 +6,14 @@ const despesasServices = new DespesasServices();
 
 class DespesaController {
   static async pegaTodasAsDespesas(req, res, next) {
+    const { descricao } = req.query;
+    const where = {};
+    descricao ? (where.descricao = descricao) : null;
     try {
-      const todasAsDespesas = await despesasServices.pegaTodosOsRegistros();
-      return res.status(200).json(validacoes.filtrar(todasAsDespesas));
+      const despesasEncontradas = await despesasServices.pegaTodosOsRegistros(
+        where
+      );
+      return res.status(200).json(validacoes.filtrar(despesasEncontradas));
     } catch (error) {
       return next(error);
     }
@@ -17,7 +22,7 @@ class DespesaController {
   static async pegaUmaDespesa(req, res, next) {
     const { id } = req.params;
     try {
-      const umaDespesa = await despesasServices.pegaUmRegistro(id);
+      const umaDespesa = await despesasServices.pegaUmRegistroPeloId(id);
       return res.status(200).json(umaDespesa);
     } catch (error) {
       return next(error);
@@ -44,7 +49,7 @@ class DespesaController {
       await despesasServices.atualizaRegistro(novasInfos, {
         where: { id: Number(id) },
       });
-      const despesaAtualizada = await despesasServices.pegaUmRegistro(id);
+      const despesaAtualizada = await despesasServices.pegaUmRegistroPeloId(id);
       return res.status(200).json(despesaAtualizada);
     } catch (error) {
       return next(error);
@@ -54,7 +59,7 @@ class DespesaController {
   static async apagaDespesa(req, res, next) {
     const { id } = req.params;
     try {
-      await despesasServices.pegaUmRegistro(id);
+      await despesasServices.pegaUmRegistroPeloId(id);
       await despesasServices.deletaRegistro(id);
       return res.status(200).json({ mensagem: `id ${id} deletado` });
     } catch (error) {

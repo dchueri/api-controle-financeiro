@@ -20,11 +20,18 @@ class Services {
     }
   }
 
-  async pegaTodosOsRegistros() {
-    return database[this.nomeDoModelo].findAll({ raw: true });
+  async pegaTodosOsRegistros(where) {
+    const resultado = await database[this.nomeDoModelo].findAll({
+      where,
+      raw: true,
+    });
+    if (resultado.length === 0) {
+      throw new NaoEncontrado(this.defineNomeDoModelo());
+    }
+    return resultado;
   }
 
-  async pegaUmRegistro(id) {
+  async pegaUmRegistroPeloId(id) {
     const lancamentoEncontrado = await database[this.nomeDoModelo].findOne({
       where: {
         id: id,

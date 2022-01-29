@@ -6,9 +6,14 @@ const validacoes = new Validacoes("Receitas");
 
 class ReceitaController {
   static async pegaTodasAsReceitas(req, res, next) {
+    const { descricao } = req.query;
+    const where = {};
+    descricao ? (where.descricao = descricao) : null;
     try {
-      const todasAsReceitas = await receitasServices.pegaTodosOsRegistros();
-      return res.status(200).json(validacoes.filtrar(todasAsReceitas));
+      const receitasEncontradas = await receitasServices.pegaTodosOsRegistros(
+        where
+      );
+      return res.status(200).json(validacoes.filtrar(receitasEncontradas));
     } catch (error) {
       return next(error);
     }
@@ -17,7 +22,7 @@ class ReceitaController {
   static async pegaUmaReceita(req, res, next) {
     const { id } = req.params;
     try {
-      const umaReceita = await receitasServices.pegaUmRegistro(id);
+      const umaReceita = await receitasServices.pegaUmRegistroPeloId(id);
       return res.status(200).json(umaReceita);
     } catch (error) {
       return next(error);
@@ -44,7 +49,7 @@ class ReceitaController {
       await receitasServices.atualizaRegistro(novasInfos, {
         where: { id: Number(id) },
       });
-      const receitaAtualizada = await receitasServices.pegaUmRegistro(id);
+      const receitaAtualizada = await receitasServices.pegaUmRegistroPeloId(id);
       return res.status(200).json(receitaAtualizada);
     } catch (error) {
       return next(error);
@@ -54,7 +59,7 @@ class ReceitaController {
   static async apagaReceita(req, res, next) {
     const { id } = req.params;
     try {
-      await receitasServices.pegaUmRegistro(id);
+      await receitasServices.pegaUmRegistroPeloId(id);
       await receitasServices.deletaRegistro(id);
       return res.status(200).json({ mensagem: `id ${id} deletado` });
     } catch (error) {
