@@ -6,6 +6,8 @@ const database = require("../models");
 const moment = require("moment");
 const Validacoes = require("../Validacoes");
 const validacoes = new Validacoes();
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 class Services {
   constructor(nomeDoModelo) {
@@ -43,6 +45,19 @@ class Services {
     }
 
     return lancamentoEncontrado;
+  }
+
+  async pegaRegistrosPeloMes(ano, mes) {
+    const inicioDoMes = moment(`${ano}-${mes}`).startOf('month').format('YYYY-MM-DD');
+    const finalDoMes = moment(`${ano}-${mes}`).endOf('month').format('YYYY-MM-DD');
+    
+    return database[this.nomeDoModelo]
+    .findAll({ where: {
+            data: {
+                [Op.gte]: inicioDoMes,
+                [Op.lte]: finalDoMes
+                }}}
+    );
   }
 
   async criaRegistro(dados) {

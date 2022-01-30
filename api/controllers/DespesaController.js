@@ -29,6 +29,20 @@ class DespesaController {
     }
   }
 
+  static async pegaAsDespesasPeloMes(req, res, next) {
+    const { ano, mes } = req.params;
+
+    try {
+      const despesasDoMesmoMes = await despesasServices.pegaRegistrosPeloMes(
+        ano,
+        mes
+      );
+      return res.status(200).json(despesasDoMesmoMes);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   static async criaDespesa(req, res, next) {
     const dados = req.body;
     try {

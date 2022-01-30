@@ -29,6 +29,20 @@ class ReceitaController {
     }
   }
 
+  static async pegaAsReceitasPeloMes(req, res, next) {
+    const { ano, mes } = req.params;
+
+    try {
+      const receitasDoMesmoMes = await receitasServices.pegaRegistrosPeloMes(
+        ano,
+        mes
+      );
+      return res.status(200).json(receitasDoMesmoMes);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   static async criaReceita(req, res, next) {
     const dados = req.body;
     try {
