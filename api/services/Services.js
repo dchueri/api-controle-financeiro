@@ -48,16 +48,58 @@ class Services {
   }
 
   async pegaRegistrosPeloMes(ano, mes) {
-    const inicioDoMes = moment(`${ano}-${mes}`).startOf('month').format('YYYY-MM-DD');
-    const finalDoMes = moment(`${ano}-${mes}`).endOf('month').format('YYYY-MM-DD');
-    
-    return database[this.nomeDoModelo]
-    .findAll({ where: {
-            data: {
-                [Op.gte]: inicioDoMes,
-                [Op.lte]: finalDoMes
-                }}}
-    );
+    const inicioDoMes = moment(`${ano}-${mes}`)
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const finalDoMes = moment(`${ano}-${mes}`)
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
+    return database[this.nomeDoModelo].findAll({
+      where: {
+        data: {
+          [Op.gte]: inicioDoMes,
+          [Op.lte]: finalDoMes,
+        },
+      },
+    });
+  }
+
+  async somaTodosOsRegistrosDoMes(ano, mes) {
+    const inicioDoMes = moment(`${ano}-${mes}`)
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const finalDoMes = moment(`${ano}-${mes}`)
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
+    return database[this.nomeDoModelo].sum("valor", {
+      where: {
+        data: {
+          [Op.gte]: inicioDoMes,
+          [Op.lte]: finalDoMes,
+        },
+      },
+    });
+  }
+
+  async somaPelaCategoriaNoMesmoMes(categoria, ano, mes) {
+    const inicioDoMes = moment(`${ano}-${mes}`)
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const finalDoMes = moment(`${ano}-${mes}`)
+      .endOf("month")
+      .format("YYYY-MM-DD");
+
+    return database[this.nomeDoModelo].sum("valor", {
+      where: {
+        categoria: categoria,
+        data: {
+          [Op.gte]: inicioDoMes,
+          [Op.lte]: finalDoMes,
+        },
+      },
+    });
   }
 
   async criaRegistro(dados) {
