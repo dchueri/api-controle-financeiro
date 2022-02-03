@@ -41,6 +41,15 @@ class Validacoes {
     }
   }
 
+  verificaDadosDoUsuario(dados) {
+    if (typeof dados.nome !== "string" || dados.nome.length === 0) {
+      throw new CampoInvalido("nome");
+    }
+    if (typeof dados.senha !== "string" || dados.senha.length === 0) {
+      throw new CampoInvalido("senha");
+    }
+  }
+
   verificaSeRegistroExiste(registro, nomeDoModelo) {
     if (!registro) {
       throw new NaoEncontrado(nomeDoModelo);
