@@ -1,5 +1,7 @@
 const DespesasServices = require("../services/DespesasServices");
 const ReceitasServices = require("../services/ReceitasServices");
+const Validacoes = require("../Validacoes");
+const validacoes = new Validacoes("Resumo");
 const despesasServices = new DespesasServices();
 const receitasServices = new ReceitasServices();
 
@@ -12,6 +14,10 @@ class ResumoController {
         await despesasServices.somaTodosOsRegistrosDoMes(ano, mes);
       let somaDasReceitasDoMes =
         await receitasServices.somaTodosOsRegistrosDoMes(ano, mes);
+
+      const registrosEncontrados = somaDasDespesasDoMes + somaDasReceitasDoMes;
+
+      validacoes.verificaSeHouveramRegistrosNoMes(registrosEncontrados);
 
       const categorias = [
         "Alimentação",
@@ -31,9 +37,7 @@ class ResumoController {
         if (somaTotalDaCategoria <= 0) {
           somaTotalDaCategoria = 0;
         }
-        umaCategoria.push(
-          `O valor de ${cat} é de R$ ${somaTotalDaCategoria.toFixed(2)}`
-        );
+        umaCategoria.push(`${cat}: R$ ${somaTotalDaCategoria.toFixed(2)}`);
       }
 
       if (somaDasDespesasDoMes <= 0) {
@@ -44,13 +48,13 @@ class ResumoController {
       }
 
       const resumo = {
-        despesas: `O valor total de despesas no mês ${mes}/${ano} é de R$ ${somaDasDespesasDoMes.toFixed(
+        despesas: `Total de despesas no mês ${mes}/${ano}: R$ ${somaDasDespesasDoMes.toFixed(
           2
         )}`,
-        receitas: `O valor total de receitas no mês ${mes}/${ano} é de R$ ${somaDasReceitasDoMes.toFixed(
+        receitas: `Total de receitas no mês ${mes}/${ano}: R$ ${somaDasReceitasDoMes.toFixed(
           2
         )}`,
-        saldo: `O saldo total do mês é de R$ ${(
+        saldo: `Saldo do mês: R$ ${(
           somaDasReceitasDoMes - somaDasDespesasDoMes
         ).toFixed(2)}`,
         somaTotalDaCategoria: umaCategoria,

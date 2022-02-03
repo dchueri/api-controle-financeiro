@@ -1,7 +1,3 @@
-const {
-  NaoEncontrado,
-  LancamentoExistente,
-} = require("../errors/listaDeErros");
 const database = require("../models");
 const moment = require("moment");
 const Validacoes = require("../Validacoes");
@@ -27,9 +23,8 @@ class Services {
       where,
       raw: true,
     });
-    if (resultado.length === 0) {
-      throw new NaoEncontrado(this.defineNomeDoModelo());
-    }
+    const nomeDoModelo = this.defineNomeDoModelo();
+    validacoes.verificaSeRegistroExiste(resultado.length, nomeDoModelo);
     return resultado;
   }
 
@@ -40,9 +35,8 @@ class Services {
       },
     });
 
-    if (!lancamentoEncontrado) {
-      throw new NaoEncontrado(this.defineNomeDoModelo());
-    }
+    const nomeDoModelo = this.defineNomeDoModelo();
+    validacoes.verificaSeRegistroExiste(lancamentoEncontrado, nomeDoModelo);
 
     return lancamentoEncontrado;
   }
@@ -55,7 +49,7 @@ class Services {
       .endOf("month")
       .format("YYYY-MM-DD");
 
-    return database[this.nomeDoModelo].findAll({
+    const resultado = await database[this.nomeDoModelo].findAll({
       where: {
         data: {
           [Op.gte]: inicioDoMes,
@@ -63,6 +57,8 @@ class Services {
         },
       },
     });
+    validacoes.verificaSeHouveramRegistrosNoMes(resultado.length);
+    return resultado;
   }
 
   async somaTodosOsRegistrosDoMes(ano, mes) {

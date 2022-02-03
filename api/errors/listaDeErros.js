@@ -33,9 +33,18 @@ class NaoEncontrado extends Error {
   }
 }
 
+class SemRegistros extends Error {
+  constructor() {
+    super(`Não existem registros para o período solicitado!`);
+    this.name = "SemRegistros";
+    this.idErro = 4;
+  }
+}
+
 module.exports = {
   CampoInvalido: CampoInvalido,
   DadosNaoFornecidos: DadosNaoFornecidos,
   LancamentoExistente: LancamentoExistente,
   NaoEncontrado: NaoEncontrado,
+  SemRegistros: SemRegistros,
 };

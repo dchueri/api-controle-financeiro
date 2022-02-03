@@ -23,7 +23,7 @@ class DespesaController {
     const { id } = req.params;
     try {
       const umaDespesa = await despesasServices.pegaUmRegistroPeloId(id);
-      return res.status(200).json(umaDespesa);
+      return res.status(200).json(validacoes.filtrar(umaDespesa));
     } catch (error) {
       return next(error);
     }
